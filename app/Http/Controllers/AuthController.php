@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -17,7 +16,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login','register']]);
     }
 
     /**
@@ -28,9 +27,10 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
+        //dd($credentials);
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Email or Password Invalid'], 401);
         }
 
         return $this->respondWithToken($token);
@@ -82,5 +82,24 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function register(Request $request){
+
+        $validateData = $request->validate([
+            'name' => ['required','string','max:255'],
+            'email' => ['required','string','max:255','unique:users','email'],
+            'password' => ['required','string','confirmed']
+            ]);
+
+         $data = array();
+         $data['name'] = $request->name;
+         $data['email'] = $request->email;
+         $data['password'] = Hash::make($request->password);
+
+         DB::table('users')->insert($data);
+
+         return $this->login($request);
+
     }
 }
