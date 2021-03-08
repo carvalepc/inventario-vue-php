@@ -1955,7 +1955,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     login: function login() {
       axios.post('api/auth/login', this.form).then(function (res) {
-        return console.log(res.data);
+        return User.responseAfterLogin(res);
       })["catch"](function (error) {
         return console.log(error.response.data);
       });
@@ -2070,12 +2070,12 @@ var AppStorage = /*#__PURE__*/function () {
   }, {
     key: "getToken",
     value: function getToken() {
-      localStorage.getItem('token');
+      localStorage.getItem(token);
     }
   }, {
     key: "getUser",
     value: function getUser() {
-      localStorage.getItem('user');
+      localStorage.getItem(user);
     }
   }]);
 
@@ -2167,8 +2167,8 @@ var User = /*#__PURE__*/function () {
   }
 
   _createClass(User, [{
-    key: "reponseAfterLogin",
-    value: function reponseAfterLogin(res) {
+    key: "responseAfterLogin",
+    value: function responseAfterLogin(res) {
       var access_token = res.data.access_token;
       var username = res.data.name;
 
@@ -2179,13 +2179,13 @@ var User = /*#__PURE__*/function () {
   }, {
     key: "hasToken",
     value: function hasToken() {
-      var storeToken = localStorage.getItem(token);
+      var storeToken = localStorage.getItem('token');
 
       if (storeToken) {
         return _Token__WEBPACK_IMPORTED_MODULE_0__.default.isValid(storeToken) ? true : false;
       }
 
-      return false;
+      false;
     }
   }, {
     key: "loggedIn",
@@ -2195,14 +2195,14 @@ var User = /*#__PURE__*/function () {
   }, {
     key: "name",
     value: function name() {
-      if (this.loggedIn) {
+      if (this.loggedIn()) {
         return localStorage.getItem('user');
       }
     }
   }, {
     key: "id",
     value: function id() {
-      if (this.loggedIn) {
+      if (this.loggedIn()) {
         var payload = _Token__WEBPACK_IMPORTED_MODULE_0__.default.payload(localStorage.getItem('token'));
         return payload.sub;
       }
